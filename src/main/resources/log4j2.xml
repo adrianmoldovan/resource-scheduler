@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+	<Properties>
+		<Property name="log-path">logs</Property>
+	</Properties>
+	<Appenders>
+		<RollingFile name="RollingFile" fileName="${log-path}/scheduler.log"
+			filePattern="${log-path}/scheduler-%d{yyyy-MM-dd}-%i.log">
+			<PatternLayout>
+				<pattern>[%d{yyyy-MM-dd HH:mm:ss,SSS}][%-5p][%c{10}:%L]: %m%n
+				</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="25 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout>
+				<pattern>[%d{yyyy-MM-dd HH:mm:ss,SSS}][%-5p][%c{10}:%L]: %m%n
+				</pattern>
+			</PatternLayout>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="root" level="debug" additivity="false">
+			<appender-ref ref="RollingFile" level="debug" />
+		</Logger>
+		<Logger name="console" level="debug" additivity="false">
+			<appender-ref ref="STDOUT" level="debug" />
+		</Logger>
+
+		<Root level="debug" additivity="false">
+			<AppenderRef ref="RollingFile" />
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+</Configuration>
