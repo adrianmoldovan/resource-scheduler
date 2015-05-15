@@ -22,10 +22,11 @@ public class GatewayImpl implements Gateway {
 	    logger.info("Start sending message " + msg.id() + ", group "
 		    + msg.id());
 	    Thread.sleep(randomInt);
+	    msg.completed();
 	} catch (Exception ex) {
 	    // do nothing
 	}
-	msg.completed();
+	
 	logger.info("Message " + msg.id() + "from group " + msg.id() + " sent.");
     }
 }

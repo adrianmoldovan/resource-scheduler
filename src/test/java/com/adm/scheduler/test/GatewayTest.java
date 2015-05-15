@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.adm.scheduler.Gateway;
-import com.adm.scheduler.Message;
 import com.adm.scheduler.MessageImpl;
 import com.adm.scheduler.pool.GatewayPool;
 
@@ -54,5 +53,12 @@ public class GatewayTest extends TestCase {
 	//test pool release
 	pool.release(gate);
 	assertEquals(5, pool.size());
+    }
+    
+    @Test
+    public void testShutdown(){
+	assertEquals(5, pool.size());
+	pool.shutdown();
+	assertEquals(0, pool.size());
     }
 }
