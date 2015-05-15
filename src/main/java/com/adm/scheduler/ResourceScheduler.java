@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import com.adm.scheduler.pool.GatewayPool;
+
 public class ResourceScheduler implements Runnable {
 
     private int maxRes;
 
-    private List<Gateway> idle = new ArrayList<Gateway>();
-    private List<Gateway> used = new ArrayList<Gateway>();
+    private GatewayPool pool;
 
     MessageComparator comparator = new MessageComparator();
 
@@ -21,11 +22,8 @@ public class ResourceScheduler implements Runnable {
     public ResourceScheduler(int max) {
 	if (max <= 0)
 	    throw new IllegalArgumentException();
-
 	this.maxRes = max;
-	for (int i = 0; i < maxRes; i++) {
-	    idle.add(new GatewayImpl());
-	}
+	pool = new GatewayPool(maxRes);
     }
 
     public void add(Message msg) {
@@ -44,19 +42,15 @@ public class ResourceScheduler implements Runnable {
 
     public void sendMessage(Message msg) {
 	synchronized (this) {
-	    if (idle.size() > 0) {
-		Gateway gate = idle.remove(0);
-		used.add(gate);
+	    Gateway gate = null;
+	    try {
+		gate = pool.get();
 		gate.send(msg);
-		used.remove(gate);
-		idle.add(gate);
-		notifyAll();
-	    } else {
-		try {
-		    wait();
-		} catch (InterruptedException e) {
-		    e.printStackTrace();
-		}
+	    } catch (Exception ex) {
+		// TODO display some errors
+	    } finally {
+		if (gate != null)
+		    pool.release(gate);
 	    }
 	}
 
