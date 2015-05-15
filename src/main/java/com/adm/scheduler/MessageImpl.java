@@ -6,10 +6,12 @@ public class MessageImpl implements Message {
     private long groupID;
 
     private boolean completed = false;
+    private boolean last = false;
 
-    public MessageImpl(long id, long group) {
+    public MessageImpl(long id, long group, boolean isLast) {
 	this.id = id;
 	this.groupID = group;
+	this.last = isLast;
     }
 
     @Override
@@ -18,17 +20,22 @@ public class MessageImpl implements Message {
     }
 
     @Override
-    public long group() {
+    public long getGroup() {
 	return groupID;
     }
 
     @Override
-    public long id() {
+    public long getId() {
 	return id;
     }
 
     public boolean isCompleted() {
 	return completed;
+    }
+
+    @Override
+    public boolean last() {
+	return last;
     }
 
 }

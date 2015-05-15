@@ -1,9 +1,13 @@
 package com.adm.scheduler;
 
 public interface Message {
+
     public void completed();
     
-    public long group();
+    public long getGroup();
     
-    public long id();
+    public long getId();
+    
+    public boolean last();
+    
 }

@@ -19,14 +19,14 @@ public class GatewayImpl implements Gateway {
 	// simulate long operation
 	try {
 	    int randomInt = randomGenerator.nextInt(3000);// max 3 sec
-	    logger.info("Start sending message " + msg.id() + ", group "
-		    + msg.id());
+	    logger.info("Start sending message " + msg.getId() + ", group "
+		    + msg.getId());
 	    Thread.sleep(randomInt);
 	    msg.completed();
 	} catch (Exception ex) {
 	    // do nothing
 	}
 	
-	logger.info("Message " + msg.id() + "from group " + msg.id() + " sent.");
+	logger.info("Message " + msg.getId() + "from group " + msg.getId() + " sent.");
     }
 }
