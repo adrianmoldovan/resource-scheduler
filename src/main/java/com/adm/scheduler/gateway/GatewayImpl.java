@@ -9,7 +9,7 @@ import com.adm.scheduler.message.Message;
 
 public class GatewayImpl implements Gateway {
 
-    final static Logger logger = LogManager.getLogger();
+    private final static Logger LOGGER = LogManager.getLogger();
 
     /**
      * used to simulate external time consuming resource call
@@ -21,14 +21,14 @@ public class GatewayImpl implements Gateway {
 	// simulate long operation
 	try {
 	    int randomInt = randomGenerator.nextInt(3000);// max 3 sec
-	    logger.info("Start sending message " + msg.getId() + ", group "
-		    + msg.getId());
+	    LOGGER.info("Start sending message " + msg.getId() + ", group "
+		    + msg.getGroup());
 	    Thread.sleep(randomInt);
 	    msg.completed();
 	} catch (Exception ex) {
 	    // do nothing
 	}
 	
-	logger.info("Message " + msg.getId() + "from group " + msg.getId() + " sent.");
+	LOGGER.info("Message " + msg.getId() + " from group " + msg.getId() + " sent.");
     }
 }
