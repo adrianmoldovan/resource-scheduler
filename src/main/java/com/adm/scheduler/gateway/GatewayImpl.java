@@ -1,9 +1,11 @@
-package com.adm.scheduler;
+package com.adm.scheduler.gateway;
 
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.adm.scheduler.message.Message;
 
 public class GatewayImpl implements Gateway {
 

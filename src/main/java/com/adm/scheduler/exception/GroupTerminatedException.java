@@ -1,6 +1,7 @@
 package com.adm.scheduler.exception;
 
-import com.adm.scheduler.Message;
+import com.adm.scheduler.message.Message;
+
 
 public class GroupTerminatedException extends RuntimeException {
 

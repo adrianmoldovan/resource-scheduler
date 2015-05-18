@@ -3,6 +3,8 @@ package com.adm.scheduler;
 import java.util.Comparator;
 import java.util.Hashtable;
 
+import com.adm.scheduler.message.Message;
+
 public class MessageComparator implements Comparator<Message> {
 
     Hashtable<Long, Long> priority = new Hashtable<Long, Long>();

@@ -7,9 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.adm.scheduler.Message;
-import com.adm.scheduler.MessageImpl;
 import com.adm.scheduler.ResourceScheduler;
+import com.adm.scheduler.message.Message;
+import com.adm.scheduler.message.MessageImpl;
 
 public class ResourceSchedulerTest {
 
@@ -77,12 +77,15 @@ public class ResourceSchedulerTest {
 	Message msg1 = new MessageImpl(1, 1, false);
 	Message msg2 = new MessageImpl(2, 2, false);
 	Message msg3 = new MessageImpl(3, 1, false);
+	Message msg4 = new MessageImpl(3, 0, false);
 	scheduler.clear();
 	scheduler.add(msg1);
 	scheduler.add(msg2);
 	scheduler.add(msg3);
+	scheduler.add(msg4);
 
-	TestCase.assertEquals(3, scheduler.count());
+	TestCase.assertEquals(4, scheduler.count());
+	TestCase.assertEquals(msg4, scheduler.getNext());
 	TestCase.assertEquals(msg1, scheduler.getNext());
 	TestCase.assertEquals(msg3, scheduler.getNext());
 	TestCase.assertEquals(msg2, scheduler.getNext());

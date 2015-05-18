@@ -5,13 +5,13 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.adm.scheduler.Gateway;
-import com.adm.scheduler.MessageImpl;
+import com.adm.scheduler.gateway.Gateway;
+import com.adm.scheduler.message.MessageImpl;
 import com.adm.scheduler.pool.GatewayPool;
 
 public class GatewayTest {
 
-    GatewayPool pool;
+    private GatewayPool pool;
 
     @Before
     public void setUp() {

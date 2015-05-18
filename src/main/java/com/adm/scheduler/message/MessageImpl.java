@@ -1,4 +1,4 @@
-package com.adm.scheduler;
+package com.adm.scheduler.message;
 
 public class MessageImpl implements Message {
 

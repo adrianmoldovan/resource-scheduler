@@ -1,7 +1,7 @@
 package com.adm.scheduler.pool;
 
-import com.adm.scheduler.Gateway;
-import com.adm.scheduler.GatewayImpl;
+import com.adm.scheduler.gateway.Gateway;
+import com.adm.scheduler.gateway.GatewayImpl;
 
 public class GatewayPool extends ObjectPool<Gateway> {
 

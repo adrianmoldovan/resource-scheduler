@@ -1,4 +1,4 @@
-package com.adm.scheduler;
+package com.adm.scheduler.message;
 
 public interface Message {
 

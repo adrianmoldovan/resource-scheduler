@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import com.adm.scheduler.exception.GroupTerminatedException;
+import com.adm.scheduler.gateway.Gateway;
+import com.adm.scheduler.message.Message;
 import com.adm.scheduler.pool.GatewayPool;
 
 public class ResourceScheduler implements Runnable {
@@ -31,7 +33,9 @@ public class ResourceScheduler implements Runnable {
 	if (msg == null) {
 	    throw new IllegalArgumentException();
 	}
-	if (terminated.contains(msg.getGroup() + "")) {
+	if (canceled.contains(msg.getGroup()+"")) //Cancellation
+	    return;
+	if (terminated.contains(msg.getGroup() + "")) { //Termination Messages
 	    throw new GroupTerminatedException(msg);
 	} else if (msg.last()) {
 	    terminated.contains(msg.getGroup() + "");
