@@ -77,7 +77,7 @@ public class ResourceSchedulerTest {
 	Message msg1 = new MessageImpl(1, 1, false);
 	Message msg2 = new MessageImpl(2, 2, false);
 	Message msg3 = new MessageImpl(3, 1, false);
-	Message msg4 = new MessageImpl(3, 0, false);
+	Message msg4 = new MessageImpl(4, 0, false);
 	scheduler.clear();
 	scheduler.add(msg1);
 	scheduler.add(msg2);
@@ -85,10 +85,14 @@ public class ResourceSchedulerTest {
 	scheduler.add(msg4);
 
 	TestCase.assertEquals(4, scheduler.count());
-	TestCase.assertEquals(msg4, scheduler.getNext());
-	TestCase.assertEquals(msg1, scheduler.getNext());
-	TestCase.assertEquals(msg3, scheduler.getNext());
-	TestCase.assertEquals(msg2, scheduler.getNext());
+	Message m = scheduler.getNext();
+	TestCase.assertEquals(msg1, m);
+	m = scheduler.getNext();
+	TestCase.assertEquals(msg3, m);
+	m = scheduler.getNext();
+	TestCase.assertEquals(msg2, m);
+	m = scheduler.getNext();
+	TestCase.assertEquals(msg4, m);
 	TestCase.assertEquals(0, scheduler.count());
     }
 }

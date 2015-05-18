@@ -1,11 +1,16 @@
 package com.adm.scheduler;
 
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.PriorityQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.adm.scheduler.comparator.ComparatorType;
+import com.adm.scheduler.comparator.GroupIdComparator;
+import com.adm.scheduler.comparator.MessageComparator;
+import com.adm.scheduler.comparator.MessageIdComparator;
 import com.adm.scheduler.gateway.Gateway;
 import com.adm.scheduler.message.Message;
 import com.adm.scheduler.pool.GatewayPool;
@@ -18,21 +23,41 @@ public class ResourceScheduler implements Runnable {
 
     private GatewayPool pool;
 
-    MessageComparator comparator = new MessageComparator();
-
-    PriorityQueue<Message> queue = new PriorityQueue<Message>(comparator);
-
     private volatile HashSet<String> cancelled = new HashSet<String>();
 
     private volatile HashSet<String> terminated = new HashSet<String>();
 
+    private volatile Hashtable<String, Long> groupsCount = new Hashtable<String, Long>();
+
+    private PriorityQueue<Message> queue = null;
+
     private boolean shutdownSignal = false;
 
     public ResourceScheduler(int max) {
+	this(max, ComparatorType.NORMAL);
+    }
+
+    public ResourceScheduler(int max, ComparatorType type) {
 	if (max <= 0)
 	    throw new IllegalArgumentException();
 	this.maxRes = max;
 	pool = new GatewayPool(maxRes);
+	createQueue(type);
+    }
+
+    public void createQueue(ComparatorType comp) {
+	switch (comp) {
+	case GROUPID:
+	    queue = new PriorityQueue<Message>(new GroupIdComparator());
+	    break;
+	case MESSAGEID:
+	    queue = new PriorityQueue<Message>(new MessageIdComparator());
+	    break;
+	case NORMAL:
+	default:
+	    queue = new PriorityQueue<Message>(new MessageComparator(groupsCount));
+	    break;
+	}
     }
 
     public void add(Message msg) {
@@ -46,21 +71,39 @@ public class ResourceScheduler implements Runnable {
 		return;
 	    }
 	    if (terminated.contains(msg.getGroup() + "")) { // Termination
-		LOGGER.error("Group " + msg.getGroup() + " is closed." );
+		LOGGER.error("Group " + msg.getGroup() + " is closed.");
 	    } else if (msg.last()) {
 		LOGGER.info("Last message from " + msg.getGroup()
 			+ " received.");
 		terminated.add(msg.getGroup() + "");
 	    }
+	    Long count = groupsCount.get(msg.getGroup() + "");
+	    if (count != null) {
+		count++;
+	    } else {
+		count = new Long(1);
+	    }
+	    groupsCount.put(msg.getGroup() + "", count);
 	    queue.add(msg);
 	}
     }
 
     public Message getNext() {
-	if (queue.size() != 0) {
-	    return queue.remove();
+	synchronized (this) {
+	    if (queue.size() != 0) {
+		Message msg = queue.remove();
+		Long count = groupsCount.get(msg.getGroup() + "");
+		if (count != null && count > 0) {
+		    count--;
+		    if (count <= 0)
+			groupsCount.remove(msg.getGroup() + "");
+		    else
+			groupsCount.put(msg.getGroup() + "", count);
+		}
+		return msg;
+	    }
+	    return null;
 	}
-	return null;
     }
 
     public void cancelGroup(long grId) {
