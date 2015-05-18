@@ -25,7 +25,7 @@ public class MessageComparator implements Comparator<Message> {
 	    return 1;
 	if (priority.get(o2.getGroup()) != null)
 	    return -1;
-	return 0;
+	return -1;
     }
 
 }
