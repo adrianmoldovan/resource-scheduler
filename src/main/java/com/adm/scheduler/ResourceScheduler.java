@@ -48,14 +48,14 @@ public class ResourceScheduler implements Runnable {
     public void createQueue(ComparatorType comp) {
 	switch (comp) {
 	case GROUPID:
-	    queue = new PriorityQueue<Message>(new GroupIdComparator());
+	    queue = new PriorityQueue<Message>(100, new GroupIdComparator());
 	    break;
 	case MESSAGEID:
-	    queue = new PriorityQueue<Message>(new MessageIdComparator());
+	    queue = new PriorityQueue<Message>(100, new MessageIdComparator());
 	    break;
 	case NORMAL:
 	default:
-	    queue = new PriorityQueue<Message>(new MessageComparator(groupsCount));
+	    queue = new PriorityQueue<Message>(100, new MessageComparator(groupsCount));
 	    break;
 	}
     }
@@ -131,7 +131,7 @@ public class ResourceScheduler implements Runnable {
 	while (true) {
 	    if (shutdownSignal)
 		break;
-	    sendMessage(getNext());
+	            sendMessage(getNext());
 	}
 	LOGGER.info("Resource Scheduler : STOP");
     }

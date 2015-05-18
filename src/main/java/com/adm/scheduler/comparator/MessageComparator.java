@@ -19,13 +19,14 @@ public class MessageComparator implements Comparator<Message> {
      */
     @Override
     public int compare(Message o1, Message o2) {
-	if (priority.get(o1.getGroup()) != null && priority.get(o2.getGroup()) != null) // both groups are started
-	    return 0;
 	if (priority.get(o1.getGroup()) != null)
 	    return 1;
 	if (priority.get(o2.getGroup()) != null)
 	    return -1;
-	return -1;
+//	if (o1.getGroup() == o2.getGroup())
+//	    return 0;
+	return 1;
+
     }
 
 }

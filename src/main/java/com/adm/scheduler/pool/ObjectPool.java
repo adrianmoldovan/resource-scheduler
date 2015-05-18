@@ -35,6 +35,7 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
 
 		try {
 		    t = objects.take();
+		    System.err.println("get: " + objects.size());
 		} catch (InterruptedException ie) {
 		    Thread.currentThread().interrupt();
 		}
@@ -49,6 +50,7 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
     @Override
     public void release(T t) {
 	try {
+	    System.err.println("release: " + objects.size());
 	    objects.put(t);
 	} catch (InterruptedException e) {
 	    Thread.currentThread().interrupt();
