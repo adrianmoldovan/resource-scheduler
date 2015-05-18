@@ -16,6 +16,7 @@ public class Application {
 
 	ResourceScheduler scheduler = new ResourceScheduler(4);
 
+	try {
 	// startup messages;
 	Message msg1 = new MessageImpl(1, 2, false);
 	scheduler.add(msg1);
@@ -37,15 +38,18 @@ public class Application {
 	    Message msg = new MessageImpl(i, randomId, false);
 	    scheduler.add(msg);
 	}
+	} catch (Exception e) {
+	    LOGGER.error(e.getMessage(), e);
+	}
 	
 
 	try {
 	    Thread.sleep(15 * 1000);
 	} catch (Exception ex) {
+	    ex.printStackTrace();
 	    //do nothing
 	}
 	scheduler.shutdown(); // send application termination after 15 sec	
 
     }
-
 }

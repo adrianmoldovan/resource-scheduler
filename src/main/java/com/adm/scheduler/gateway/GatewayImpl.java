@@ -29,6 +29,6 @@ public class GatewayImpl implements Gateway {
 	    // do nothing
 	}
 	
-	LOGGER.info("Message " + msg.getId() + " from group " + msg.getId() + " sent.");
+	LOGGER.info("Message " + msg.getId() + " from group " + msg.getGroup() + " sent.");
     }
 }

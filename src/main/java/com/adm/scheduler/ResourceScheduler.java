@@ -6,7 +6,6 @@ import java.util.PriorityQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.adm.scheduler.exception.GroupTerminatedException;
 import com.adm.scheduler.gateway.Gateway;
 import com.adm.scheduler.message.Message;
 import com.adm.scheduler.pool.GatewayPool;
@@ -23,9 +22,9 @@ public class ResourceScheduler implements Runnable {
 
     PriorityQueue<Message> queue = new PriorityQueue<Message>(comparator);
 
-    private volatile  HashSet<String> canceled = new HashSet<String>();
+    private volatile HashSet<String> cancelled = new HashSet<String>();
 
-    private volatile  HashSet<String> terminated = new HashSet<String>();
+    private volatile HashSet<String> terminated = new HashSet<String>();
 
     private boolean shutdownSignal = false;
 
@@ -41,13 +40,13 @@ public class ResourceScheduler implements Runnable {
 	    if (msg == null) {
 		throw new IllegalArgumentException();
 	    }
-	    if (canceled.contains(msg.getGroup() + "")) { // Cancellation
+	    if (cancelled.contains(msg.getGroup() + "")) { // Cancellation
 		LOGGER.info("Group " + msg.getGroup() + " cancelled. Message "
 			+ msg.getId() + " will be ignored.");
 		return;
 	    }
 	    if (terminated.contains(msg.getGroup() + "")) { // Termination
-		throw new GroupTerminatedException(msg);
+		LOGGER.error("Group " + msg.getGroup() + " is closed." );
 	    } else if (msg.last()) {
 		LOGGER.info("Last message from " + msg.getGroup()
 			+ " received.");
@@ -65,12 +64,14 @@ public class ResourceScheduler implements Runnable {
     }
 
     public void cancelGroup(long grId) {
-	if (!canceled.contains(grId))
-	    canceled.add(grId + "");
+	synchronized (this) {
+	    if (!cancelled.contains(grId))
+		cancelled.add(grId + "");
+	}
     }
 
     public boolean isCancelled(long grId) {
-	return canceled.contains(grId);
+	return cancelled.contains(grId);
     }
 
     public int count() {
@@ -93,12 +94,15 @@ public class ResourceScheduler implements Runnable {
     }
 
     public void sendMessage(Message msg) {
+	if (msg == null)
+	    return;
 	synchronized (this) {
 	    Gateway gate = null;
 	    try {
 		gate = pool.get();
 		gate.send(msg);
 	    } catch (Exception ex) {
+		LOGGER.error(ex.getMessage(), ex);
 		// TODO display some errors
 	    } finally {
 		if (gate != null)
