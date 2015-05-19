@@ -38,4 +38,9 @@ public class MessageImpl implements Message {
 	return last;
     }
 
+    @Override
+    public String toString() {
+	return id + " " + groupID;
+    }
+
 }

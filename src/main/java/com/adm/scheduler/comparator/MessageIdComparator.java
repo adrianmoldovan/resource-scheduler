@@ -8,11 +8,7 @@ public class MessageIdComparator  implements Comparator<Message> {
 
     @Override
     public int compare(Message o1, Message o2) {
-	if (o1.getId() > o2.getId())
-	    return 1;
-	if (o1.getId() < o2.getId())
-	    return -1;
-	return 0;
+	return Long.compare(o1.getId(), o2.getId());
     }
 
 }

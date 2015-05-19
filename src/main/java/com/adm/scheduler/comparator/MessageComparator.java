@@ -23,8 +23,6 @@ public class MessageComparator implements Comparator<Message> {
 	    return 1;
 	if (priority.get(o2.getGroup()) != null)
 	    return -1;
-//	if (o1.getGroup() == o2.getGroup())
-//	    return 0;
 	return 1;
 
     }

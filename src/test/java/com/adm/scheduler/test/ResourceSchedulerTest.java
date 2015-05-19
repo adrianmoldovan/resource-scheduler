@@ -74,7 +74,7 @@ public class ResourceSchedulerTest {
     }
     
     @Test
-    public void testPriorityMessages() {
+    public void testPriorityMessages1() {
 	Message msg1 = new MessageImpl(1, 1, false);
 	Message msg2 = new MessageImpl(2, 2, false);
 	Message msg3 = new MessageImpl(3, 1, false);
@@ -108,10 +108,10 @@ public class ResourceSchedulerTest {
 	Message msg2 = new MessageImpl(2, 2, false);
 	Message msg3 = new MessageImpl(3, 1, false);
 	Message msg4 = new MessageImpl(4, 0, false);
-	Message msg5 = new MessageImpl(5, 1, false);
+	Message msg5 = new MessageImpl(4, 1, false);
 	scheduler2.clear();
-	scheduler2.add(msg1);
 	scheduler2.add(msg2);
+	scheduler2.add(msg1);
 	scheduler2.add(msg4);
 	scheduler2.add(msg3);
 	scheduler2.add(msg5);
@@ -137,15 +137,17 @@ public class ResourceSchedulerTest {
 	Message msg2 = new MessageImpl(2, 2, false);
 	Message msg3 = new MessageImpl(3, 1, false);
 	Message msg4 = new MessageImpl(4, 0, false);
-	Message msg5 = new MessageImpl(5, 1, false);
+	Message msg5 = new MessageImpl(5, 3, false);
+	Message msg6 = new MessageImpl(6, 1, false);
 	scheduler3.clear();
 	scheduler3.add(msg1);
 	scheduler3.add(msg2);
 	scheduler3.add(msg3);
 	scheduler3.add(msg4);
 	scheduler3.add(msg5);
+	scheduler3.add(msg6);
 
-	TestCase.assertEquals(5, scheduler3.count());
+	TestCase.assertEquals(6, scheduler3.count());
 	Message m = scheduler3.getNext();
 	TestCase.assertEquals(msg4, m);
 	m = scheduler3.getNext();
@@ -153,9 +155,11 @@ public class ResourceSchedulerTest {
 	m = scheduler3.getNext();
 	TestCase.assertEquals(msg3, m);
 	m = scheduler3.getNext();
-	TestCase.assertEquals(msg5, m);
+	TestCase.assertEquals(msg6, m);
 	m = scheduler3.getNext();
 	TestCase.assertEquals(msg2, m);
+	m = scheduler3.getNext();
+	TestCase.assertEquals(msg5, m);
 	TestCase.assertEquals(0, scheduler3.count());
     }
 }
