@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -149,6 +150,7 @@ public class ResourceScheduler implements Runnable {
 
 	}
 	LOGGER.info("Resource Scheduler : STOP");
+//	System.exit(0); // to close the app - newCachedThreadPool is not creating daemon thread --> the ap
     }
 
     public void sendMessage(Message msg) {
@@ -170,5 +172,11 @@ public class ResourceScheduler implements Runnable {
     public void shutdown() {
 	LOGGER.info("Shutdown signal received.");
 	shutdownSignal = true;
+	executorService.shutdown();
+	try {
+	    executorService.awaitTermination(1, TimeUnit.SECONDS);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
     }
 }

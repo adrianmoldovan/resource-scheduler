@@ -5,16 +5,58 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.adm.scheduler.comparator.ComparatorType;
 import com.adm.scheduler.message.Message;
 import com.adm.scheduler.message.MessageImpl;
 
 public class Application {
     private final static Logger LOGGER = LogManager.getLogger();
 
+    private static void displayError() {
+	System.out
+		.println("ERROR: Wrong parameters. Parameters example: 5 NORMAL");
+	System.out.println("First parameter is the number of resources available.");
+	System.out.println("Second parameter is the procesing priority: ");
+	System.out.println("NORMAL - normal message processing.");
+	System.out.println("MESSAGEID - message id ascending priority");
+	System.out.println("GROUPID - group id ascending priority");
+	System.exit(1); // exit with error
+    }
+
     public static void main(String[] args) {
 	LOGGER.info("Starting Resource Scheduler demo application.");
 
-	ResourceScheduler scheduler = new ResourceScheduler(4);
+	if (args.length != 2) {
+	    System.err.println(args.length);
+	    System.err.println("11");
+	    displayError();
+	}
+
+	String p0 = args[0];
+	String p1 = args[1];
+	
+	int size = 0;
+	try {
+	    size = Integer.parseInt(p0);
+	} catch (Exception e) {
+	    System.err.println("22");
+	    displayError();
+	}
+	
+	ComparatorType type = null;
+	try {
+	    type = ComparatorType.valueOf(p1);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    System.err.println("33");
+	    displayError();
+	}
+	if (type == null) { // double check - not necessary
+	    System.err.println("44");
+	    displayError();
+	}
+
+	ResourceScheduler scheduler = new ResourceScheduler(size, type);
 
 	try {
 	    // startup messages;
@@ -45,9 +87,9 @@ public class Application {
 
 	try {
 	    Thread.sleep(15 * 1000);
+	    LOGGER.info("Closing application after 15 sec.");
 	} catch (Exception ex) {
-	    ex.printStackTrace();
-	    // do nothing
+	    LOGGER.error(ex.getMessage(), ex);
 	}
 	scheduler.shutdown(); // send application termination after 15 sec
 

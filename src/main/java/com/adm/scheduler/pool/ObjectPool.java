@@ -1,10 +1,14 @@
 package com.adm.scheduler.pool;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private int size;
 
@@ -36,8 +40,8 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
 
 		try {
 		    t = objects.take();
-		    System.err.println("get: " + objects.size());
-		} catch (Exception ie) {
+		} catch (Exception e) {
+		    LOGGER.error(e.getMessage(), e);
 		}
 
 		return t;
@@ -51,18 +55,17 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
     public void release(T t) {
 	try {
 	    objects.offer(t);
-	    System.err.println("release: " + objects.size());
 	} catch (Exception e) {
-	    
+	    LOGGER.error(e.getMessage(), e);
 	}
     }
 
     @Override
     public void shutdown() {
-	//clear the reasources - our case just clear the pool
+	// clear the reasources - our case just clear the pool
 	objects.clear();
     }
-    
+
     public int size() {
 	return objects.size();
     }
