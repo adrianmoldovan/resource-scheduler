@@ -1,6 +1,7 @@
 package com.adm.scheduler.pool;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
@@ -21,7 +22,7 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
      * create expensive resource
      */
     private void init() {
-	objects = new LinkedBlockingQueue<T>(size);
+	objects = new LinkedBlockingQueue<T>();
 	for (int i = 0; i < size; i++) {
 	    objects.add(createNew());
 	}
@@ -36,8 +37,7 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
 		try {
 		    t = objects.take();
 		    System.err.println("get: " + objects.size());
-		} catch (InterruptedException ie) {
-		    Thread.currentThread().interrupt();
+		} catch (Exception ie) {
 		}
 
 		return t;
@@ -50,10 +50,10 @@ public abstract class ObjectPool<T> implements ObjectFactory<T>, Pool<T> {
     @Override
     public void release(T t) {
 	try {
+	    objects.offer(t);
 	    System.err.println("release: " + objects.size());
-	    objects.put(t);
-	} catch (InterruptedException e) {
-	    Thread.currentThread().interrupt();
+	} catch (Exception e) {
+	    
 	}
     }
 

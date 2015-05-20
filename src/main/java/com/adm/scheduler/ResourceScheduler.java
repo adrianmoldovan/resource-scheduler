@@ -3,6 +3,8 @@ package com.adm.scheduler;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +35,8 @@ public class ResourceScheduler implements Runnable {
 
     private boolean shutdownSignal = false;
 
+    ExecutorService executorService;
+
     public ResourceScheduler(int max) {
 	this(max, ComparatorType.NORMAL);
     }
@@ -42,6 +46,10 @@ public class ResourceScheduler implements Runnable {
 	    throw new IllegalArgumentException();
 	this.maxRes = max;
 	pool = new GatewayPool(maxRes);
+	
+	//will create as many thread as needed - will be limited by the Gateway pool size.
+	executorService = Executors.newCachedThreadPool();
+	
 	createQueue(type);
     }
 
@@ -55,7 +63,8 @@ public class ResourceScheduler implements Runnable {
 	    break;
 	case NORMAL:
 	default:
-	    queue = new PriorityQueue<Message>(100, new MessageComparator(groupsCount));
+	    queue = new PriorityQueue<Message>(100, new MessageComparator(
+		    groupsCount));
 	    break;
 	}
     }
@@ -131,7 +140,13 @@ public class ResourceScheduler implements Runnable {
 	while (true) {
 	    if (shutdownSignal)
 		break;
-	            sendMessage(getNext());
+	    executorService.execute(new Runnable() {
+		@Override
+		public void run() {
+		    sendMessage(getNext());
+		}
+	    });
+
 	}
 	LOGGER.info("Resource Scheduler : STOP");
     }
@@ -139,18 +154,15 @@ public class ResourceScheduler implements Runnable {
     public void sendMessage(Message msg) {
 	if (msg == null)
 	    return;
-	synchronized (this) {
-	    Gateway gate = null;
-	    try {
-		gate = pool.get();
-		gate.send(msg);
-	    } catch (Exception ex) {
-		LOGGER.error(ex.getMessage(), ex);
-		// TODO display some errors
-	    } finally {
-		if (gate != null)
-		    pool.release(gate);
-	    }
+	Gateway gate = null;
+	try {
+	    gate = pool.get();
+	    gate.send(msg);
+	} catch (Exception ex) {
+	    LOGGER.error(ex.getMessage(), ex);
+	} finally {
+	    if (gate != null)
+		pool.release(gate);
 	}
 
     }
