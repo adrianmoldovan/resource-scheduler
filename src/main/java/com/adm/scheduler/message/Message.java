@@ -4,10 +4,12 @@ public interface Message {
 
     public void completed();
     
-    public long getGroup();
+    public int getGroup();
     
-    public long getId();
+    public int getId();
     
     public boolean last();
+    
+    public int getIndex();
     
 }

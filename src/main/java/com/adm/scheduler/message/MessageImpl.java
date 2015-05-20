@@ -2,16 +2,18 @@ package com.adm.scheduler.message;
 
 public class MessageImpl implements Message {
 
-    private long id;
-    private long groupID;
+    private int id;
+    private int groupID;
+    private int index;
 
     private boolean completed = false;
     private boolean last = false;
 
-    public MessageImpl(long id, long group, boolean isLast) {
+    public MessageImpl(int id, int group, boolean isLast, int index) {
 	this.id = id;
 	this.groupID = group;
 	this.last = isLast;
+	this.index = index;
     }
 
     @Override
@@ -20,13 +22,18 @@ public class MessageImpl implements Message {
     }
 
     @Override
-    public long getGroup() {
+    public int getGroup() {
 	return groupID;
     }
 
     @Override
-    public long getId() {
+    public int getId() {
 	return id;
+    }
+    
+    @Override
+    public int getIndex() {
+	return index;
     }
 
     public boolean isCompleted() {

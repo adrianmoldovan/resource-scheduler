@@ -20,7 +20,7 @@ public class GatewayTest {
 
     @Test
     public void testSize() {
-	 TestCase.assertEquals(5, pool.size());
+	TestCase.assertEquals(5, pool.size());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class GatewayTest {
 	TestCase.assertEquals(4, pool.size());
 
 	// test message send
-	MessageImpl msg = new MessageImpl(1, 1, false);
+	MessageImpl msg = new MessageImpl(1, 1, false, 1);
 	TestCase.assertEquals(false, msg.isCompleted());
 	gate.send(msg);
 	TestCase.assertEquals(true, msg.isCompleted());

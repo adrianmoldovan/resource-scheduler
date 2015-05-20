@@ -91,7 +91,7 @@ public class ResourceScheduler implements Runnable {
     public Message getNext() {
 	synchronized (this) {
 	    if (queue.size() != 0) {
-		Message msg = queue.remove();
+		Message msg = queue.poll();
 		Long count = groupsCount.get(msg.getGroup() + "");
 		if (count != null && count > 0) {
 		    count--;
