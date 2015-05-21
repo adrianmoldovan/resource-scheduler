@@ -48,7 +48,7 @@ public class ResourceScheduler implements Runnable {
 	this.maxRes = max;
 	pool = new GatewayPool(maxRes);
 	
-	//will create as many thread as needed - optimized to CPU thread count
+	//will create as many thread as needed - optimized based CPU cores count
 	executorService = Executors.newWorkStealingPool();
 	
 	createQueue(type);
@@ -150,7 +150,6 @@ public class ResourceScheduler implements Runnable {
 
 	}
 	LOGGER.info("Resource Scheduler : STOP");
-//	System.exit(0); // to close the app - newCachedThreadPool is not creating daemon thread --> the ap
     }
 
     public void sendMessage(Message msg) {

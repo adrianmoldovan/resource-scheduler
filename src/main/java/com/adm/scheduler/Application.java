@@ -27,8 +27,6 @@ public class Application {
 	LOGGER.info("Starting Resource Scheduler demo application.");
 
 	if (args.length != 2) {
-	    System.err.println(args.length);
-	    System.err.println("11");
 	    displayError();
 	}
 
@@ -39,7 +37,6 @@ public class Application {
 	try {
 	    size = Integer.parseInt(p0);
 	} catch (Exception e) {
-	    System.err.println("22");
 	    displayError();
 	}
 	
@@ -47,12 +44,9 @@ public class Application {
 	try {
 	    type = ComparatorType.valueOf(p1);
 	} catch (Exception e) {
-	    e.printStackTrace();
-	    System.err.println("33");
 	    displayError();
 	}
 	if (type == null) { // double check - not necessary
-	    System.err.println("44");
 	    displayError();
 	}
 
