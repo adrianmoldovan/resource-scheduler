@@ -48,8 +48,8 @@ public class ResourceScheduler implements Runnable {
 	this.maxRes = max;
 	pool = new GatewayPool(maxRes);
 	
-	//will create as many thread as needed - will be limited by the Gateway pool size.
-	executorService = Executors.newCachedThreadPool();
+	//will create as many thread as needed - optimized to CPU thread count
+	executorService = Executors.newWorkStealingPool();
 	
 	createQueue(type);
     }
@@ -172,11 +172,12 @@ public class ResourceScheduler implements Runnable {
     public void shutdown() {
 	LOGGER.info("Shutdown signal received.");
 	shutdownSignal = true;
-	executorService.shutdown();
+	
 	try {
-	    executorService.awaitTermination(1, TimeUnit.SECONDS);
+	    executorService.shutdown();
+	    executorService.awaitTermination(5, TimeUnit.SECONDS);
 	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	    LOGGER.error(e.getMessage(), e);
 	}
     }
 }
