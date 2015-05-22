@@ -49,7 +49,9 @@ public class ResourceScheduler implements Runnable {
 	pool = new GatewayPool(maxRes);
 	
 	//will create as many thread as needed - optimized based CPU cores count
-	executorService = Executors.newWorkStealingPool();
+	int processors = Runtime.getRuntime().availableProcessors();
+	LOGGER.error(processors);
+	executorService = Executors.newFixedThreadPool(processors);
 	
 	createQueue(type);
     }
