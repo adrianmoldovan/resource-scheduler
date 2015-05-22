@@ -50,7 +50,6 @@ public class ResourceScheduler implements Runnable {
 	
 	//will create as many thread as needed - optimized based CPU cores count
 	int processors = Runtime.getRuntime().availableProcessors();
-	LOGGER.error(processors);
 	executorService = Executors.newFixedThreadPool(processors);
 	
 	createQueue(type);
