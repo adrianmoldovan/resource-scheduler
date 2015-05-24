@@ -1,0 +1,79 @@
+----------------------------------------------------------------------------
+A. Design and development plan:
+
+To build the solution I tried to follow as much as I could these steps:
+- project setup: 
+    - created eclipse project with maven structure;
+    - created Github project + initial import;
+- basic code:
+    - added basic code - mock classes;
+    - added basic object pool - to manage the "expensive" external resource;
+- unit test code:
+    - added unit testing for mocking code;
+- implement the solution:
+    - filled the mock code;
+- test the solution:
+    - run unit tests;
+    - write new unit test;
+- re-factoring;
+- re-tests;
+
+If I succeeded of not using these steps you can check by following the Github commit stream.
+
+----------------------------------------------------------------------------
+B.  Solution
+
+The solution has 3 major part:
+1. managing the expensive resource - as a solution I choose Object Pool Pattern with fix size.
+        I chosen to handle the pool behaviour using 2 interfaces: Pool - methods for pool handling (get, release, shutdown) and ObjectFactory - methods used for creating new objects (createNew).
+    After I had the format defined in interfaces, I added ObjectPool abstract class, where is implemented pool mechanism using BlockingQueue as a container
+    for pooled objects. Then I added the class to handle Gateway resource pool: GatewayPool where remained to be define the method for creating new Gateway resource.
+This is implemented as a generic pool using java.util.concurrent.LinkedBlockingQueue
+2. managing the message queue -  adding messages directly in right order using a message comparator: Here were implemented 3 comparators (to demonstrate that the solution is extendible):
+	- MessageComparator: the normal queue
+	- MessageIdComparator: the messages are send in ascending order based on message id;
+	- GroupIdComparator: the messages are send in ascending order based on group id;
+3. main scheduler mechanism.
+        It is implemented in class ResourceScheduler that implements Runnable. The contructor creates the GatewayPool object with fix size. Also class contains code for cancelled groups and for
+    terminated messages. This is implemented using two HashSet objects where are saved groups that are closed or terminated.
+    Other important methods are:
+            - add - contains mechanism for adding a new message to the queue. The method also threats cancelled and terminated messages.
+            - getNext - will get the next message to be send;            
+            - cancelGroup - will notify that a group was closed;
+            - run - the main running loop, will run until the shutdown message is received;
+            - sendMessage - this method is used to send the messages to gateway resource, here is implemented the mechanism of pooling:
+                                - get object from pool of available, or wait if not;
+                                - use the object
+                                - return the object to the pool after usage;
+            - shutdown - will get the shutdown message 
+
+External resource communication:
+    As the system was define in beginning using 2 interfaces: Gateway and Messages and the implementations were not provided, I added implementation for these two, adding needed information,
+also I added in send method from Gateway a Thread.sleep to simulate the long operation.
+
+
+Class Application is the demo app - simulates the ResouceScheduler usage. The application demo logic:
+- added 3 messages to the queue from 3 different group;
+- start the ResourceScheduler class;
+- cancel a group (group 1);
+- send a terminated message (group 3);
+- added 15 random messages from max 4 groups;
+- wait 15 sec;
+- send a shutdown signal;
+The application will stop after ~15 sec the queue. All remaining messages will be discarded. These 15 sec will not ensure that all messages are processed. (testing the shutdown resource scheduler)
+----------------------------------------------------------------------------
+C. Run Demo
+
+step to get and run the demo application (from command line):
+Note: to run these steps the system already need to have install java 1.7, maven 3.x, git
+1. get the code from Github:
+git clone https://github.com/adrianmoldovan/resource-scheduler.git
+2. compile the code using maven commands:
+cd resource-scheduler
+mvn clean package
+mvn dependency:copy-dependencies
+3. run the application (log level set to INFO - to display only my output):
+cd target
+java -jar resource-scheduler-0.0.1-SNAPSHOT.jar 4 NORMAL
+
+Note: first parameter is the resource max count; second parameter is the queue type with posible values: NORMAL(the order described in task received), GROUPID (ordered ascending based on group id), MESSAGEID (ordered ascending based on message id)
