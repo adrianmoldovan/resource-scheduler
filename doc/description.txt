@@ -51,6 +51,9 @@ External resource communication:
     As the system was define in beginning using 2 interfaces: Gateway and Messages and the implementations were not provided, I added implementation for these two, adding needed information,
 also I added in send method from Gateway a Thread.sleep to simulate the long operation.
 
+The solution also contains junit tests for most important part; (these are also executed on maven build: mvn package)
+
+
 
 Class Application is the demo app - simulates the ResouceScheduler usage. The application demo logic:
 - added 3 messages to the queue from 3 different group;
